@@ -15,7 +15,8 @@ val String json = '{"lr":
     "4": {"mood": "work", "brightness": "100", "color": "0"},
     "5": {"mood": "dinner", "brightness": "70", "color": "80"},
     "6": {"mood": "tv", "brightness": "50", "color": "60"},
-    "7": {"mood": "cooking", "brightness":"100", "color":"0"}}
+    "7": {"mood": "cooking", "brightness":"100", "color":"0"},
+    "8": {"mood": "morning", "brightness": "100", "color": "50"}}
 }'
 
 
@@ -169,7 +170,7 @@ when
 then
 	var intCount	
 	if (switchNight.state.toString == "ON") {
-	    var intAllLights = 0
+	    var intSumBrightness = 0
 	    group_lr_lights.members.forEach[ j | 
 	    var intItemBrightness = 0
 	    if (j.state.toString.contains("O")) {
@@ -180,11 +181,11 @@ then
 		intItemBrightness = Integer::parseInt(j.state.toString)
 	    }
 
-	    intAllLights = intAllLights + intItemBrightness
+	    intSumBrightness = intAllLights + intItemBrightness
 	]
 	
 
-	if (intAllLights = 0){
+	if (intSumBrightness = 0){
 		    lr_scene.sendCommand(3)// nmbNightAuto.state.toString)
 		    // logInfo("Nacht", "Es ist Abend, ich schalte an: " + transform("JSONPATH", "$.lr." + nmbNightAuto.state.toString  + ".mood", json))
 	}
@@ -264,22 +265,19 @@ end
 
 rule "Check if there is at least one light switched on"
 when
-    Time cron "0/30 0 0 ? * *"
+    Time cron "0/30 * * ? * *"
 then
- var intAllLights = 0
-            group_lr_lights.members.forEach[ j | 
-		//logInfo("Schalter", "State: " + j.state)
-		var intItemBrightness = 0
-		if (j.state.toString.contains("O")) {
-		    if (j.state.toString.contains("F")) { 
-			intItemBrightness = 0 
-		    } else { intItemBrightness = 1 }
-		} else {
-		    intItemBrightness = Integer::parseInt(j.state.toString)
-		}
+    var intSumBrightness = 0
+    group_lr_lights.members.forEach[ j | 
+	//logInfo("Schalter", "State: " + j.state)
+	var intItemBrightness = 0
+	if (j.state.toString.contains("O")) {
+	    if (j.state.toString.contains("F")) { intItemBrightness = 0 } 
+	    else { intItemBrightness = 1 }
+	} else { intItemBrightness = Integer::parseInt(j.state.toString) }
 
-		intAllLights = intAllLights + intItemBrightness
-	    ]
-    if (intAllLights > 0){ atLeastOneLight.sendCommand("ON")
-    else { atLeastOneLight.sendCommand("OFF")}
+	intSumBrightness = intSumBrightness + intItemBrightness
+    ]
+    if (intSumBrightness > 0){ atLeastOneLight.sendCommand("ON") }
+    else { atLeastOneLight.sendCommand("OFF") }
 end
