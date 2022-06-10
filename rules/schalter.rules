@@ -37,7 +37,8 @@ then
 		group_lr_lights.members.forEach[ i | i.sendCommand(OFF) ]
 		lr_scene.postUpdate("0")
 	    } else {
-		lr_scene.sendCommand("3")
+		if (lr_scene.state.toString == "3") { lr_scene.sendCommand("8") }
+		else { lr_scene.sendCommand("3") }
 		intRun.sendCommand(0)
 	    }
 	}   
@@ -75,7 +76,7 @@ then
 		intAllLights_4002 = intAllLights_4002 + intItemBrightness_4002
 	    ]
 	    if (intAllLights_4002 > 0) { 
-		logInfo("Cycle Schalter", "intRun: " + intRun + " moods: " + transform("JSONPATH", "$." + intRun.state.toString, jsonMoods))	
+		// logInfo("Cycle Schalter", "intRun: " + intRun + " moods: " + transform("JSONPATH", "$." + intRun.state.toString, jsonMoods))	
 		lr_scene.sendCommand(transform("JSONPATH", "$." + intRun.state.toString, jsonMoods)) }
 	}
     }
