@@ -62,20 +62,7 @@ then
 		intRun.sendCommand(Integer::parseInt(intRun.state.toString) + 1)
 	    }
 
-	    var intAllLights_4002 = 0
-	    group_lr_lights.members.forEach[ j | 
-		var intItemBrightness_4002 = 0
-		if (j.state.toString.contains("O")) {
-		    if (j.state.toString.contains("F")) { 
-			intItemBrightness_4002 = 0 
-		    } else { intItemBrightness_4002 = 1 }
-		} else {
-		    intItemBrightness_4002 = Integer::parseInt(j.state.toString)
-		}
-
-		intAllLights_4002 = intAllLights_4002 + intItemBrightness_4002
-	    ]
-	    if (intAllLights_4002 > 0) { 
+	    if (atLeastOneLight.state.toString == "ON") { 
 		// logInfo("Cycle Schalter", "intRun: " + intRun + " moods: " + transform("JSONPATH", "$." + intRun.state.toString, jsonMoods))	
 		lr_scene.sendCommand(transform("JSONPATH", "$." + intRun.state.toString, jsonMoods)) }
 	}
@@ -92,3 +79,25 @@ then
 	group_lr_lights_cooking.members.forEach[ i | i.sendCommand("OFF")]
     }
 end
+
+rule "OnOff Flur"
+when
+    Channel "deconz:switch:000000000000:onoff_flur:buttonevent" triggered
+then
+    /*
+     * 1002 = AN
+     * 2002 = AUS
+     */
+    
+    switch(receivedEvent) {
+	case "1002": { 
+	    group_lr_lights_morning.sendCommand("ON")
+	    group_lr_color_morning.members.forEach[ i | i.sendCommand("50")]
+	}
+	case "2002": { 
+		group_lr_lights.members.forEach[ i | i.sendCommand(OFF) ]
+		sendHttpGetRequest("http://192.168.188.36/YamahaExtendedControl/v1/main/setPower?=off")
+	}
+    }
+end
+
