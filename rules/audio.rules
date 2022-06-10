@@ -1,0 +1,78 @@
+
+
+rule "Receiver"
+when
+    Item strMediaReceiver received command
+then
+    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+
+    switch(receivedCommand) {
+	case "Aus" : sendHttpGetRequest(baseURL + "main/setPower?power=toggle")
+	case "Fernseher" : {
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "main/setInput?input=optical")
+	    strMediaLautstaerke.sendCommand("55")
+	}
+	case "Spotify" : {
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "main/setInput?input=spotify")
+	    strMediaLautstaerke.sendCommand("30")
+	}
+	case "Radio Wuppertal" : {
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "main/setInput?input=tuner")
+	    sendHttpGetRequest(baseURL + "main/setFreq?band=fm&tuning=direct&num=107400")
+	    strMediaLautstaerke.sendCommand("40")
+	}
+	case "New Clear Radio" : {
+
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "netusb/recallPreset?zone=main&num=1")
+	    strMediaLautstaerke.sendCommand("30")
+	}
+	case "Radio Bob MC" : {
+
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "netusb/recallPreset?zone=main&num=3")
+	    strMediaLautstaerke.sendCommand("30")
+	}
+	case "Radio Energy" : {
+
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "netusb/recallPreset?zone=main&num=5")
+	    strMediaLautstaerke.sendCommand("35")
+	}
+	case "dlf" : {
+
+	    sendHttpGetRequest(baseURL + "main/setPower?power=on")
+	    sendHttpGetRequest(baseURL + "netusb/recallPreset?zone=main&num=4")
+	    strMediaLautstaerke.sendCommand("35")
+	}
+    }
+end
+
+rule "Receiver Lautstärke"
+when
+    Item strMediaLautstaerke received command
+then
+    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+    sendHttpGetRequest(baseURL + "main/setVolume?volume=" + receivedCommand)
+end
+
+rule "now playing"
+when
+    Time cron "0/30 * * * * *"  
+then
+    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+    val playtype = transform("JSONPATH", "$.input", sendHttpGetRequest(baseURL + "main/getStatus"))
+    val track = transform("JSONPATH", "$.track", sendHttpGetRequest(baseURL + "netusb/getPlayInfo"))
+
+    if (playtype == "net_radio" || playtype == "spotify" || playtype == "server") {
+	if (track !== null) {
+	    strNowPlaying.sendCommand(track)
+	}} else{
+	    strNowPlaying.sendCommand(strMediaReceiver.state)
+	}
+end
+
+

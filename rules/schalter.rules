@@ -1,0 +1,93 @@
+// import org.openhab.core.model.script.ScriptServiceUtil
+
+rule "Switch lights on"
+when
+    Channel "deconz:switch:00212E06EE28:tradfri1:buttonevent" triggered 
+then
+    /*
+     * 1002 middle
+     * 2002 up
+     * 3002 down
+     * 4002 left
+     * 5002 right
+    */
+    
+    val String jsonMoods = '{"0":"3","1":"4","2":"6"}'
+     
+
+     switch(receivedEvent) {
+	 case  "1002": {
+	/*   var intAllLights = 0
+            group_lr_lights.members.forEach[ j | 
+		//logInfo("Schalter", "State: " + j.state)
+		var intItemBrightness = 0
+		if (j.state.toString.contains("O")) {
+		    if (j.state.toString.contains("F")) { 
+			intItemBrightness = 0 
+		    } else { intItemBrightness = 1 }
+		} else {
+		    intItemBrightness = Integer::parseInt(j.state.toString)
+		}
+
+		intAllLights = intAllLights + intItemBrightness
+	    ]
+	  */
+
+	    if (atLeastOneLight.state.toString == "ON") {
+		group_lr_lights.members.forEach[ i | i.sendCommand(OFF) ]
+		lr_scene.postUpdate("0")
+	    } else {
+		lr_scene.sendCommand("3")
+		intRun.sendCommand(0)
+	    }
+	}   
+	
+	case "2002": {
+	    var intBrightness_transfer = Integer::parseInt(dimmerBrightness.state.toString)+10 
+	    if ( intBrightness_transfer > 100 ){ intBrightness_transfer = 100 }
+	    dimmerBrightness.sendCommand(intBrightness_transfer)
+	}
+
+	case "3002": {
+	    var intBrightness_transfer = Integer::parseInt(dimmerBrightness.state.toString)-10 
+	    if ( intBrightness_transfer < 10 ){ intBrightness_transfer = 10 }
+	    dimmerBrightness.sendCommand(intBrightness_transfer)
+	}
+
+	case "4002": {
+	    if (intRun.state.toString == "2") {
+		intRun.sendCommand(0)
+	    } else {
+		intRun.sendCommand(Integer::parseInt(intRun.state.toString) + 1)
+	    }
+
+	    var intAllLights_4002 = 0
+	    group_lr_lights.members.forEach[ j | 
+		var intItemBrightness_4002 = 0
+		if (j.state.toString.contains("O")) {
+		    if (j.state.toString.contains("F")) { 
+			intItemBrightness_4002 = 0 
+		    } else { intItemBrightness_4002 = 1 }
+		} else {
+		    intItemBrightness_4002 = Integer::parseInt(j.state.toString)
+		}
+
+		intAllLights_4002 = intAllLights_4002 + intItemBrightness_4002
+	    ]
+	    if (intAllLights_4002 > 0) { 
+		logInfo("Cycle Schalter", "intRun: " + intRun + " moods: " + transform("JSONPATH", "$." + intRun.state.toString, jsonMoods))	
+		lr_scene.sendCommand(transform("JSONPATH", "$." + intRun.state.toString, jsonMoods)) }
+	}
+    }
+end
+
+rule "Shortcut Küche"
+when
+    Channel "deconz:switch:00212E06EE28:shortcut_kitchen:buttonevent" triggered
+then
+    if (dimKueche.state.toString == "0") {
+	group_lr_lights_cooking.members.forEach[ i | i.sendCommand("80")]
+    } else {
+	group_lr_lights_cooking.members.forEach[ i | i.sendCommand("OFF")]
+    }
+end
