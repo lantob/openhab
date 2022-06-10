@@ -1,0 +1,6 @@
+sitemap default label="Testseite" {
+	Frame label="Slider" {
+    		Slider item=grpArbeit icon="light" maxValue=100 item=grpArbeit
+		Slider icon="lightbulb" item=grpArbeit maxValue=100 step=10 switchEnabled="true"
+	}
+}

@@ -1,0 +1,62 @@
+/* 
+0 Off
+1 On
+2 night
+3 morning
+4 work
+5 dinner
+6 tv
+*/
+
+
+//Gruppeendefinition für VErwendung nach Design DesignPattern
+Group group_lr_lights_night
+Group group_lr_lights_morning
+Group group_lr_lights_work
+Group group_lr_lights_dinner
+Group group_lr_lights_tv
+Group group_lr_lights_cooking
+Group group_lr_lights
+Group group_lr_lights_couch
+
+Group group_lr_color_night
+Group group_lr_color_morning
+Group group_lr_color_work
+Group group_lr_color_dinner
+Group group_lr_color_tv
+Group group_lr_color_cooking
+Group group_lr_color_couch
+Group group_lr_color
+
+//Dimmer itSchreibtisch	 (alle)		{channel="tradfri:0220:gateway:schreibTrd:brightness"}
+Dimmer dimKueche 	(group_lr_lights, group_lr_lights_dinner, group_lr_lights_morning, group_lr_lights_cooking) 	{channel = "tradfri:0220:gateway:kuecheTrd:brightness"}
+Dimmer dimBalkon 	(group_lr_lights, group_lr_lights_night, group_lr_lights_morning, group_lr_lights_work)				{channel = "tradfri:0220:gateway:balkonTrd:brightness"}
+Dimmer dimPC 		(group_lr_lights, group_lr_lights_morning, group_lr_lights_work, group_lr_lights_night) 	{channel = "tradfri:0220:gateway:pcTrd:brightness"}
+Dimmer dimEsst 		(group_lr_lights, group_lr_lights_morning, group_lr_lights_dinner, group_lr_lights_cooking)	{channel = "tradfri:0220:gateway:esstisch:brightness"}
+Dimmer dimTV 		(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:tvTrd:brightness"}
+Dimmer dimCouch 	(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:couchTrd:brightness"}
+Dimmer dimmerBrightness
+Dimmer dimmerColor "Farben"
+
+Color colPC	(group_lr_color, group_lr_color_morning, group_lr_color_work, group_lr_color_night)	    {channel = "tradfri:0220:gateway:pcTrd:color_temperature"}
+Color colKueche	(group_lr_color, group_lr_color_morning, group_lr_color_dinner, group_lr_color_cooking)							    {channel = "tradfri:0220:gateway:kuecheTrd:color_temperature"}
+
+Color colBalkon (group_lr_color,  group_lr_color_work, group_lr_color_night)	    {channel = "tradfri:0220:gateway:balkonTrd:color_temperature"}
+Color colEsst	(group_lr_color, group_lr_color_dinner, group_lr_color_cooking)				    {channel = "tradfri:0220:gateway:esstisch:color_temperature"}
+Color colTV 	(group_lr_color, group_lr_color_tv)									    {channel = "tradfri:0220:gateway:tvTrd:color_temperature"}
+Color colCouch	(group_lr_color, group_lr_color_tv)									    {channel = "tradfri:0220:gateway:couchTrd:color_temperature"}
+
+Group group_scenes
+
+Number lr_scene "Wohnzimmer Stimmung" (group_scenes)
+
+Group group_LightSwitches
+
+Switch switchLightAuto "Schalter Lichtautomatik"
+Switch switchNight "Schalter Tag/Nacht"
+
+String nmbDayAuto "Automatische Szene bei Sonnenaufagang"
+String nmbNightAuto "Automatische Szene bei Sonnenuntergang"
+
+Switch handypre "Handy Detection"
+Switch atLeastOneLight 

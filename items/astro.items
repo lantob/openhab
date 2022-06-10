@@ -1,0 +1,10 @@
+DateTime Sunrise_Time "Sonnenaufgang [%1$tH:%1$tM]" {channel="astro:sun:home:rise#start"}
+DateTime Sunset_Time "Sonnenuntergang [%1$tH:%1$tM]" {channel="astro:sun:home:set#start"}
+//Number Azimuth "Azimut" {channel="astro:sun:home:position#azimuth"}
+//Number Elevation "Höhenlage" {channel="astro:sun:home:position#elevation"}
+//String MoonPhase "Mondphase" {channel="astro:moon:home:phase#name"}
+
+Switch Sunrise_Event {astro="planet=sun, type=rise, property=start, offset=15"}
+Switch Sunrise_Event {astro="planet=sun, type=set, property=end, offset=-20"}
+
+Switch switchNight "TagNacht - An wenn Nacht, Aus wenn Tag"

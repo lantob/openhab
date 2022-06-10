@@ -1,0 +1,19 @@
+sitemap openhab2 label="default SmartHome w/ openhab"
+{
+	Frame label="Date" {
+		Text item=Date
+	}
+	Frame label="Test" {
+		Switch item=sw_kill icon="light"
+		Text item=LR_Temperature label="Livingroom [%.1f °C]"
+		Switch item=wz_all label="Lampen" mappings=[wz_all="Wohnzimmer", wz_tv="TV-Modus", kit="Küche", alle="Alle"]
+		Text label=Lampensteuerung
+		Switch item=moodswitch mappings=[AL="Alle aus", WZ="Wohnzimmer", TV="Fernsehen", KT="Küche"]
+		Switch item=dimval label="Helligkeit" mappings=[0="aus", 30="30%", 70="70%", 100="100%"]
+		Colorpicker item=moodcol label="Wohnraumfarbe" icon="colorwheel"
+	}
+	Frame label="Slider" {
+		Slider item=grpArbeit icon="light" maxValue=100
+		Slider item=dimPC icon="light" maxValue=100
+	}
+}

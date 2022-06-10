@@ -7,21 +7,21 @@ import org.openhab.core.model.script.ScriptServiceUtil
 // import java.text.SimpleDateFormat
 
 // Der .json String muss aktuell in der Datei selbst definiert sein, hier werden aber Color und Brightness je nach Wert Szene
-	val String json = '{"lr":
-{"0": {"mood": "OFF", "brightness": "0", "color": "40"},
-"1": {"mood": "ON", "brightness": "100", "color": "0"},
-"2": {"mood": "night", "brightness": "50", "color": "100"},
-"3": {"mood": "morning", "brightness": "100", "color": "50"},
-"4": {"mood": "work", "brightness": "100", "color": "0"},
-"5": {"mood": "dinner", "brightness": "70", "color": "80"},
-"6": {"mood": "tv", "brightness": "50", "color": "60"},
-"7": {"mood": "cooking", "brightness":"100", "color":"0"}
-}}'
+val String json = '{"lr":
+    {"0": {"mood": "OFF", "brightness": "0", "color": "40"},
+    "1": {"mood": "ON", "brightness": "100", "color": "0"},
+    "2": {"mood": "night", "brightness": "50", "color": "100"},
+    "3": {"mood": "morning", "brightness": "100", "color": "50"},
+    "4": {"mood": "work", "brightness": "100", "color": "0"},
+    "5": {"mood": "dinner", "brightness": "70", "color": "80"},
+    "6": {"mood": "tv", "brightness": "50", "color": "60"},
+    "7": {"mood": "cooking", "brightness":"100", "color":"0"}}
+}'
 
 
 rule "Lichter updaten"
 when
-	Member of group_scenes changed 
+    Member of group_scenes changed 
 then
      // LEGACY FUNKTION VON littlechina
      /* 
@@ -29,87 +29,96 @@ then
 	Damit der Folgende Code funktioniert, müssen auch die Lichtgruppen strikt nach Schema group_RAUMNAME_LIGHTS_SZENE benannt sein. Für Farbwechsellampen wird bei Tradfri eine weitere Gruppe mit den Colorn benötigt. (Tradfri steuert die Farbe über einen seperaten Channel. )0
     */
 
-	    val roomName = triggeringItem.name.split("_").get(0) 
-	    val group = ScriptServiceUtil.getItemRegistry.getItem("group_"+roomName +"_lights") as GroupItem
-	    val groupCol = ScriptServiceUtil.getItemRegistry.getItem("group_"+roomName +"_color") as GroupItem
-	    val strColor = transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString + ".color" , json)
+    val roomName = triggeringItem.name.split("_").get(0) 
+    val group = ScriptServiceUtil.getItemRegistry.getItem("group_"+roomName +"_lights") as GroupItem
+    val groupCol = ScriptServiceUtil.getItemRegistry.getItem("group_"+roomName +"_color") as GroupItem
+    val strColor = transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString + ".color" , json)
 
-	var strBrightness = transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString + ".brightness" , json)
+    var strBrightness = transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString + ".brightness" , json)
 
 
-    // Hier werden Fehler abgefangen
-	    if(group === null) {
-		logError("admin", "Cannot find Item " + "group_"+roomName +"_lights")
-		return;
-	    }
+    // Catching Errors
+    if(group === null) {
+	logError("admin", "Cannot find Item " + "group_"+roomName +"_lights")
+	return;
+    }
 
-    // Lampen werden manuell ausgeschaltet, da keine group_RAUMNAME_LIGHTS_off definiert wurde.	    
-	    if (triggeringItem.state == 0) {
-		group.members.forEach[ i | i.sendCommand(OFF) ]
-	}
+    // Switching all lights off manually, since there is no likewise defined mood
+    if (triggeringItem.state == 0) {
+	group.members.forEach[ i | i.sendCommand(OFF) ]
+    }
 
     // Lampen werden manuell auf 100 geschaltet, wenn Stellung AN gewählt wurde.
     // Die Lichtfarbe wird automatisch aus der vorher definierten moods.map gezogen, damit die Lampen alle diesselbe Color haben.
-	else if (triggeringItem.state ==1) {
-	    logInfo("Notification", "group to set ON: " + group.name)
-	    group.members.forEach[ i | i.sendCommand(ON) ]
-	    groupCol.members.forEach[ i | i.sendCommand("0,0," + strColor)]
+    else if (triggeringItem.state ==1) {
+	logInfo("Notification", "group to set ON: " + group.name)
+	group.members.forEach[ i | i.sendCommand(100) ]
+	groupCol.members.forEach[ i | i.sendCommand("0,0," + strColor)]
 	}
 
-
 	else{
-    // definition must take place after state On or Off are handled since these are not discrete groups.
+	    // definition must take place after state On or Off are handled since these are not discrete groups.
 	    val scenegroupcol = ScriptServiceUtil.getItemRegistry.getItem( "group_"+roomName +"_color_" +transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString  + ".mood", json)) as GroupItem 
 	    val scenegroup = ScriptServiceUtil.getItemRegistry.getItem( "group_"+roomName +"_lights_" +transform("JSONPATH", "$." + roomName + "." + triggeringItem.state.toString + ".mood", json)) as GroupItem
 
 	    if(scenegroup === null) {
 		logError("admin", "Cannot find Item " + "group_"+roomName +"_lights_" +transform("MAP", roomName +".map", "brightness"))
 		return;
-        }
-    // All lights within the set group are set to the brightness defined in the json string. All others are switched off	
-	if (switchNight.state.toString == "ON" && switchLightAuto .state.toString == "ON") { strBrightness = dimmerBrightness.state.toString }
-        group.members.forEach[ i |
-            if (i.getGroupNames.contains(scenegroup.name)){
-		i.sendCommand(strBrightness)
-            }
-            else{
-                i.sendCommand(OFF)
-            }
-        ]
-	
-    // Für alle Lampen, die in der Gruppe der entsprechenden Szene enthalten sind, wird die Farbtemperatur abhängig von den Vorgabewerten in moods.map gesetzt.	
-	if (strColor !== null) {
-	    groupCol.members.forEach[ i |
-            if (i.getGroupNames.contains(scenegroupcol.name)){
-                i.sendCommand("0,0," + strColor)
-            }
-            else{
-                i.sendCommand(OFF)
-            }
-        ]
-	}
+	    }
 
-    // Aktuelle Werte an Dimmer senden, damit die Werte auf der Weboberfläche über einstimmen
-	dimmerBrightness.sendCommand(strBrightness)
-	dimmerColor.sendCommand(strColor)
-    }
+	    // All lights within the set group are set to the brightness defined in the json string. All others are switched off	
+	    if (switchNight.state.toString == "ON" && switchLightAuto .state.toString == "ON") { strBrightness = dimmerBrightness.state.toString }
+	    group.members.forEach[ i |
+		if (i.getGroupNames.contains(scenegroup.name)){
+			if (i.name.contains("Power")){
+				i.sendCommand("ON")
+			} else{
+				i.sendCommand(strBrightness)
+			}
+		}
+		else{
+		    i.sendCommand(OFF)
+		}
+	    ]
+		    
+	    // Für alle Lampen, die in der Gruppe der entsprechenden Szene enthalten sind, wird die Farbtemperatur abhängig von den Vorgabewerten in moods.map gesetzt.	
+	    if (strColor !== null) {
+		groupCol.members.forEach[ i |
+		    if (i.getGroupNames.contains(scenegroupcol.name)){
+			i.sendCommand("0,0," + strColor)
+		    }
+		    else{
+			i.sendCommand(OFF)
+		    }
+		]
+	    }
+
+	    // Aktuelle Werte an Dimmer senden, damit die Werte auf der Weboberfläche über einstimmen
+	    dimmerBrightness.sendCommand(strBrightness)
+	    dimmerColor.sendCommand(strColor)
+	}
 end
 
 
 
-rule "Brightness senken"
+rule "Adjust Brightness"
 when 
     Item dimmerBrightness changed
 then
     /* 
 	Wenn der Int dimmerBrightness entweder durch den Schieberegler oder durch andere Regeln geändert wird, wird für alle Lampen, deren Brightness nicht 0 ist, dimmerHelligkeit als neuer Wert festgelegt.
     */
-	group_lr_lights.members.forEach[ i | 
-	    if (i.state > 0){
-		i.sendCommand(dimmerBrightness.state.toString)
-		Thread::sleep(200) 
-	    }
-	]
+
+    if (dimmerBrightness.state == 0){
+	    group.members.forEach[ i | i.sendCommand(OFF)]
+    } else{
+	    group_lr_lights.members.forEach[ i | 
+		if (i.state > 0){
+		    i.sendCommand(dimmerBrightness.state.toString)
+		    Thread::sleep(200) 
+		}
+	    ]
+    }
 end
 
 rule "Colorn anpassen - global"
@@ -118,7 +127,7 @@ when
 then
     group_lr_lights.members.forEach[ i |
 	if (i.state  > 0){
-            val currentItemi = ScriptServiceUtil.getItemRegistry.getItem(i.name.replace("dim", "col")) 
+	    val currentItemi = ScriptServiceUtil.getItemRegistry.getItem(i.name.replace("dim", "col")) 
 	    currentItemi.sendCommand(dimmerColor.state.toString)
 	}
     ]
@@ -128,16 +137,17 @@ end
 
 rule "Automatische Abdunklung"
 when
-	// Jeden Tag zwischen 19 und 0 Uhr, alle 15 Minuten.
+	// Jeden Tag zwischen 19 und 0 Uhr, alle 5 Minuten.
 	Time cron "0 0/5 19-0 * * ?" 
 then
 	// Wenn es Nacht ist und die Lichtautomatik eingeschaltet wurde, wird die Brightness gemäß Timer alle 15 Minuten um 10% verringert. 
 	// Sobald die Brightness zu gering ist, wird sie nicht weiter verringert. Wenn nicht Nacht ist, werden die Lampen ausgeschaltet.
-	if (switchLightAuto.state.toString == "ON" && switchNight.state.toString == "ON") {
+
+	if (switchNight.state.toString == "ON") {
 		var intBrightness_transfer = Integer::parseInt(dimmerBrightness.state.toString) 
 		if (intBrightness_transfer >= 20) {
 			intBrightness_transfer = intBrightness_transfer - 2 
-			dimmerBrightness.postUpdate(intBrightness_transfer.toString)
+			if (switchLightAuto.state.toString == "ON"){dimmerBrightness.postUpdate(intBrightness_transfer.toString)}
 			logInfo("Automatik", "Brightness verringert")
 		}
 		else{
@@ -145,7 +155,6 @@ then
 		}			
 	}
 end
-
 
 /*	
 	Wenn der Switch, der Tag oder Nacht darstellt, geändert wird, wird automatisch eine Szene aktiviert bzw. deaktiviert.
@@ -158,12 +167,28 @@ rule "morgens aus/abends an"
 when
 	Item switchNight changed
 then
-	// logInfo("test", nmbNightAuto.state.toString + receivedCommand + "")
-	
-	//if (nmbNightAuto.state == "NULL") { nmbNightAuto.sendCommand(3) }
+	var intCount	
 	if (switchNight.state.toString == "ON") {
-			lr_scene.sendCommand(3) // nmbNightAuto.state.toString)
-			// logInfo("Nacht", "Es ist Abend, ich schalte an: " + transform("JSONPATH", "$.lr." + nmbNightAuto.state.toString  + ".mood", json))
+	    var intAllLights = 0
+	    group_lr_lights.members.forEach[ j | 
+	    var intItemBrightness = 0
+	    if (j.state.toString.contains("O")) {
+		if (j.state.toString.contains("F")) { 
+		intItemBrightness = 0 
+		} else { intItemBrightness = 1 }
+	    } else {
+		intItemBrightness = Integer::parseInt(j.state.toString)
+	    }
+
+	    intAllLights = intAllLights + intItemBrightness
+	]
+	
+
+	if (intAllLights = 0){
+		    lr_scene.sendCommand(3)// nmbNightAuto.state.toString)
+		    // logInfo("Nacht", "Es ist Abend, ich schalte an: " + transform("JSONPATH", "$.lr." + nmbNightAuto.state.toString  + ".mood", json))
+	}
+	    switchLightAuto.sendCommand(ON)
 	}
 	else {
 			lr_scene.sendCommand(0)
@@ -187,8 +212,8 @@ end
 // TAGESZEITREGELN
 
 /*
-    Damit der folgende Code funktionieren kann *muss* das Astrobinding im UI erstellt sein - anderenfalls funktioniert der Versatz nicht.
-    Bindings ohne Offset könnten auch in einer Thingdatei konfiguriert sein.
+	Damit der folgende Code funktionieren kann *muss* das Astrobinding im UI erstellt sein - anderenfalls funktioniert der Versatz nicht.
+	Bindings ohne Offset könnten auch in einer Thingdatei konfiguriert sein.
 */
 
 rule "Tageszeit Nacht"
@@ -210,31 +235,20 @@ end
 
 rule "Nachtabschaltung"
 when
-	Time cron "0 30 22 ? * SUN-THU" or
-	Time cron "0 30 22 ? * FRI-SAT"
+	Time cron "0 30 23 ? * SUN-THU" or
+	Time cron "0 30 23 ? * FRI-SAT"
 then
 	group_lr_lights.sendCommand(OFF)
 end
 
 
-rule "variable lichter"
-when
-    Item strFunction changed
-then
-    var  input = strFunction.state.toString.split(";")
-
-    logInfo("Array", input)
-    var inputL = input.get(0).split(",")
-    var inputB = input.get(1)
-
-end
-    
 rule "Handy Detection"
 when
 	Item handypre changed 
 then
 	var intBrightHandy = Integer::parseInt("0")
-	if (handypre.state.toString  == "ON" && switchNight.state.toString == "ON"){
+	var block = False
+	if (block && handypre.state.toString  == "ON" && switchNight.state.toString == "ON"){
 		group_lr_lights.members.forEach[ e  |
 			if (e.state > 0) {
 				intBrightHandy = intBrightHandy + Integer::parseInt(e.state.toString)
@@ -248,3 +262,24 @@ then
 }
 end
 
+rule "Check if there is at least one light switched on"
+when
+    Time cron "0/30 0 0 ? * *"
+then
+ var intAllLights = 0
+            group_lr_lights.members.forEach[ j | 
+		//logInfo("Schalter", "State: " + j.state)
+		var intItemBrightness = 0
+		if (j.state.toString.contains("O")) {
+		    if (j.state.toString.contains("F")) { 
+			intItemBrightness = 0 
+		    } else { intItemBrightness = 1 }
+		} else {
+		    intItemBrightness = Integer::parseInt(j.state.toString)
+		}
+
+		intAllLights = intAllLights + intItemBrightness
+	    ]
+    if (intAllLights > 0){ atLeastOneLight.sendCommand("ON")
+    else { atLeastOneLight.sendCommand("OFF")}
+end

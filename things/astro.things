@@ -1,0 +1,16 @@
+astro:sun:home [geolocation="51.2 ,7.1", interval=60]{
+	Channels:
+		Type rangeEvent : rise#event [
+			offset=30
+		]
+		Type rangeEvent : set#event [
+			offset=-20
+		]
+}
+
+astro:moon:local [geolocation="51.276871,7.154573", interval=60]{
+	Channels: 
+		Type rangeEvent : rise#event [
+			offset=30,
+		]
+}

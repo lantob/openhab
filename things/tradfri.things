@@ -1,0 +1,8 @@
+Bridge tradfri:gateway:gateway [host="192.168.188.39", code="fzk7a49Wb64rHhkQ"] {
+	0220 kuecheTrd "Küche" [ id=65543 ]
+	0220 tvTrd "Fernseher" [ id=65538 ]
+	0220 balkonTrd "Balkon" [ id=65539 ]
+	0220 pcTrd "Schreibtiisch" [ id=65540 ]
+	0220 couchTrd "Couch" [ id=65541 ]
+	0220 esstisch "Esstisch" [ id=65537 ]
+}

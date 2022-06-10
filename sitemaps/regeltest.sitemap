@@ -1,0 +1,9 @@
+sitemap regeltest label="REGELTEST"
+	{
+	Frame label="Date" {
+		Selection item=lr_scene mappings=[0="OFF", 1="ON", 2="Nacht", 3="Morgen", 4="Arbeit", 5="Dinner", 6="TV"]
+	
+		Selection item=dimmerHelligkeit  mappings=[0="0", 50="50", 100="100"]
+	}
+
+    }

@@ -1,0 +1,10 @@
+
+*.swp
+readme.txt
+*.swo
+sounds/
+automation/
+html/
+icons/
+persistence/
+services/

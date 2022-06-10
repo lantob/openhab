@@ -1,0 +1,15 @@
+itemap uebersichtmap Label="Übersicht" {
+    Frame label="Slider" {
+        Switch icon="lightbulb" item=alle switchEnabled="off"
+        Slider icon="lightbulb" item=dimTV maxValue=100 step=10 switchEnabled="true"
+        Slider icon="lightbulb" item=dimPC maxValue=100 step=10 switchEnabled="true"
+        Switch icon="colorlight" mappings=[(0,0,0) =""kalt"",48=""mittel"",97=""warm""] item=colPC
+        Slider icon="lightbulb" item=dimKueche maxValue=100 step=10 switchEnabled="true"
+        Slider icon="lightbulb" item=dimEsst maxValue=100 step=10 switchEnabled="true"
+        Slider icon="lightbulb" item=dimCouch maxValue=100 step=10 switchEnabled="true"
+        Slider icon="lightbulb" item=dimBalkon maxValue=100 step=10 switchEnabled="true"
+    }
+    Frame {
+    }
+}
+

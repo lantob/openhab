@@ -1,0 +1,15 @@
+sitemap einzel label="Einzelsteuerung" {
+	Frame label="Slider" {
+		Switch icon="lightbulb" item=alle switchEnabled="off"
+		Slider icon="lightbulb" item=dimTV maxValue=100 step=10 switchEnabled="true"
+		Slider icon="lightbulb" item=dimPC maxValue=100 step=10 switchEnabled="true"
+		Slider icon="lightbulb" item=dimKueche maxValue=100 step=10 switchEnabled="true"
+		Slider icon="lightbulb" item=dimEsst maxValue=100 step=10 switchEnabled="true"
+		Slider icon="lightbulb" item=dimCouch maxValue=100 step=10 switchEnabled="true"
+		Slider icon="lightbulb" item=dimBalkon maxValue=100 step=10 switchEnabled="true"
+	}
+	Frame label="Farben" {
+		Switch item=colPC label="Farbe PC" mappings[(0,0,0)="kalt", (0,0,48)="mittel", (0,0,97)="warm"]
+	}				
+}
+

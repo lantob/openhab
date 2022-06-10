@@ -1,0 +1,8 @@
+String strMediaReceiver "Media Receiver Steuerung"
+String strMediaLautstaerke "Media Receiver Lautstärke"
+String strNowPlaying "Media Receiver Aktueller Titel"
+
+Number intRun "Laufvariable für Tradfri Switch"
+
+// http://192.168.188.38/YamahaExtendedControl/v1/
+// http:\/\/192.168.188.38\/YamahaExtendedControl\/v1\/

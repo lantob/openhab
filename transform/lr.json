@@ -1,0 +1,9 @@
+{"lr":
+{"0": {"mood": "OFF", "brightness": "0", "color": "40"},
+"1": {"mood": "ON", "brightness": "100", "color": "0"},
+"2": {"mood": "night", "brightness": "50", "color": "100"},
+"3": {"mood": "morgen", "brightness": "100", "color": "400"},
+"4": {"mood": "arbeit", "brightness": "100", "color": "0"},
+"5": {"mood": "dinner", "brightness": "70", "color": "40"},
+"6": {"mood": "tv", "brightness": "50", "color": "40"}
+}}

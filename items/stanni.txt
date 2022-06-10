@@ -1,0 +1,37 @@
+Dimmer wz_all "Wohnzimmer, alles"
+Dimmer all "Alle"
+Dimmer kit "Küche"
+
+Group wohnzimmer "Wohnzimmer"
+Group arbeit "Work Work"
+Group fernsehen "Glotzi"
+Group essen "Omnom"
+Group kueche "Küche"
+
+
+Switch sw_wohn_all "Switch, Wohn alles"
+Switch sw_lampe_couch "Switch, Couch"
+Switch sw_lampe_tisch "Switch, Tisch"
+Switch sw_kuche "Switch, Kueche"
+DateTime date "Datum & Zeit"
+Number int_dimmer_t "Zeitwert für abdunklung"
+
+Number dimval
+String moodswitch
+
+Dimmer wz_dim_cl "Couch Links" (dummertest, raum, wohnzimmer, fernsehen, arbeit) {channel="tradfri:0220:8505fdcd:65540:brightness"}
+Dimmer wz_dim_cr"Couch Rechts" (raum, wohnzimmer, fernsehen, arbeit) {channel="tradfri:0220:8505fdcd:65541:brightness"}
+Dimmer wz_dim_tv "Couch TV" (raum, wohnzimmer, fernsehen, arbeit) {channel="tradfri:0220:8505fdcd:65539:brightness"}
+Dimmer wz_dim_wd "Wohnzimmer Mitte" (raum, wohnzimmer, arbeit, essen) {channel="tradfri:0220:8505fdcd:65538:brightness"}
+Dimmer wz_dim_tb "Wohnzimmer Tisch" (raum, essen, kueche) {channel="tradfri:0220:8505fdcd:65537:brightness"}
+
+DateTime tim_lastupdate
+Number aut_dimval
+Number crontest
+Number fakdim //Faktor für Dimmer
+Number fakdim_trig //Erkennung, ob fakdim schon gesetzt wurde
+
+
+Color moodcol "Gesamtfarbe"
+
+Switch sw_kill
