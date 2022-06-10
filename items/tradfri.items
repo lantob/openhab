@@ -59,4 +59,7 @@ String nmbDayAuto "Automatische Szene bei Sonnenaufagang"
 String nmbNightAuto "Automatische Szene bei Sonnenuntergang"
 
 Switch handypre "Handy Detection"
-Switch atLeastOneLight 
+Switch atLeastOneLight
+
+
+
