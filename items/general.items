@@ -6,3 +6,18 @@ Number intRun "Laufvariable für Tradfri Switch"
 
 // http://192.168.188.38/YamahaExtendedControl/v1/
 // http:\/\/192.168.188.38\/YamahaExtendedControl\/v1\/
+
+Group sensTemp
+Group:Number:AVG avgTemp "Average Temperature" <temperature> (Status)
+Group:Number:AVG avgHumi "Average Humidity" <humidity> (Status)
+
+Number intTemp1 "Temperatur Sensor 1 (Wohnzimmer)" (sensTemp, avgTemp) {channel="deconz:temperaturesensor:00212E06EE28:temperature3:temperature"}
+Number intTemp2 "Temperatur Sensor 2 (Schlafzimmer)" (sensTemp, avgTemp)  {channel="deconz:temperaturesensor:000000000000:temp2:temperature"}
+Number intTemp3 "Temperatur Sensor 3 (Bad)" (sensTemp, avgTemp) {channel="deconz:temperaturesensor:000000000000:temp3:temperature"} 
+
+Number intTempAll "Durchschnittliche Temperatur"
+
+Number intHum1 "Feuchtigkeit Sensor 1 (Wohnzimmer)" (avgHumi) {channel="deconz:humiditysensor:00212E06EE28:humidty1:humidity"}
+Number intHum2 "Feuchtigkeit Sensor 2 (Schlafzimmer)" (avgHumi) {channel="deconz:humiditysensor:00212E06EE28:humidity2:humidity"}
+Number intHum3 "Feuchtigkeit Sensor 3 (Bad)" (avgHumi) {channel="deconz:humiditysensor:00212E06EE28:humidity3:humidity"}
+
