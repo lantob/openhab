@@ -29,12 +29,12 @@ Group group_lr_color_couch
 Group group_lr_color
 
 //Dimmer itSchreibtisch	 (alle)		{channel="tradfri:0220:gateway:schreibTrd:brightness"}
-Dimmer dimKueche 	(group_lr_lights, group_lr_lights_dinner, group_lr_lights_morning, group_lr_lights_cooking) 	{channel = "tradfri:0220:gateway:kuecheTrd:brightness"}
-Dimmer dimBalkon 	(group_lr_lights, group_lr_lights_night, group_lr_lights_morning, group_lr_lights_work)				{channel = "tradfri:0220:gateway:balkonTrd:brightness"}
-Dimmer dimPC 		(group_lr_lights, group_lr_lights_morning, group_lr_lights_work, group_lr_lights_night) 	{channel = "tradfri:0220:gateway:pcTrd:brightness"}
-Dimmer dimEsst 		(group_lr_lights, group_lr_lights_morning, group_lr_lights_dinner, group_lr_lights_cooking)	{channel = "tradfri:0220:gateway:esstisch:brightness"}
-Dimmer dimTV 		(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:tvTrd:brightness"}
-Dimmer dimCouch 	(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:couchTrd:brightness"}
+Dimmer dimKueche    "Küche" (group_lr_lights, group_lr_lights_dinner, group_lr_lights_morning, group_lr_lights_cooking) 	{channel = "tradfri:0220:gateway:kuecheTrd:brightness"}
+Dimmer dimBalkon    "Balkon" 	(group_lr_lights, group_lr_lights_night, group_lr_lights_morning, group_lr_lights_work)				{channel = "tradfri:0220:gateway:balkonTrd:brightness"}
+Dimmer dimPC	"Schreibtisch"	(group_lr_lights, group_lr_lights_morning, group_lr_lights_work, group_lr_lights_night) 	{channel = "tradfri:0220:gateway:pcTrd:brightness"}
+Dimmer dimEsst 	"Esstisch"	(group_lr_lights, group_lr_lights_morning, group_lr_lights_dinner, group_lr_lights_cooking)	{channel = "tradfri:0220:gateway:esstisch:brightness"}
+Dimmer dimTV "Fernseher"		(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:tvTrd:brightness"}
+Dimmer dimCouch "Couch"	(group_lr_lights, group_lr_lights_tv, group_lr_lights_couch)					{channel = "tradfri:0220:gateway:couchTrd:brightness"}
 Dimmer dimmerBrightness
 Dimmer dimmerColor "Farben"
 
