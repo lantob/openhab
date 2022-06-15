@@ -116,7 +116,7 @@ then
 	    group_lr_lights.members.forEach[ i | 
 		if (i.state > 0){
 		    i.sendCommand(dimmerBrightness.state.toString)
-		    Thread::sleep(200) 
+		    Thread::sleep(200) // Lights won't change if there is no sleep.
 		}
 	    ]
     }
@@ -173,6 +173,7 @@ then
 
 	if (atLeastOneLight.state.toString == "OFF") { 
 		    lr_scene.sendCommand(3)// nmbNightAuto.state.toString)
+		    dimmerBrightness.sendCommand(100)
 		    // logInfo("Nacht", "Es ist Abend, ich schalte an: " + transform("JSONPATH", "$.lr." + nmbNightAuto.state.toString  + ".mood", json))
 	}
 	    switchLightAuto.sendCommand(ON)
