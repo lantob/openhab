@@ -4,7 +4,7 @@ rule "Receiver"
 when
     Item strMediaReceiver received command
 then
-    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+    val baseURL = "http://192.168.188.38/YamahaExtendedControl/v1/"
 
     switch(receivedCommand) {
 	case "Aus" : sendHttpGetRequest(baseURL + "main/setPower?power=toggle")
@@ -55,7 +55,7 @@ rule "Receiver Lautstärke"
 when
     Item strMediaLautstaerke received command
 then
-    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+    val baseURL = "http://192.168.188.38/YamahaExtendedControl/v1/"
     sendHttpGetRequest(baseURL + "main/setVolume?volume=" + receivedCommand)
 end
 
@@ -63,7 +63,7 @@ rule "now playing"
 when
     Time cron "0/30 * * * * *"  
 then
-    val baseURL = "http://192.168.188.36/YamahaExtendedControl/v1/"
+    val baseURL = "http://192.168.188.38/YamahaExtendedControl/v1/"
     val playtype = transform("JSONPATH", "$.input", sendHttpGetRequest(baseURL + "main/getStatus"))
     val track = transform("JSONPATH", "$.track", sendHttpGetRequest(baseURL + "netusb/getPlayInfo"))
 
@@ -71,7 +71,8 @@ then
 	if (track !== null) {
 	    strNowPlaying.sendCommand(track)
 	}} else{
-	    strNowPlaying.sendCommand(strMediaReceiver.state)
+	    if (strMediaReceiver.state == null){strNowPlaying.sendCommand("Anlage aus")}
+	    else {strNowPlaying.sendCommand(strMediaReceiver.state)}
 	}
 end
 
